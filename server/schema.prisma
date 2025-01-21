@@ -1,0 +1,42 @@
+generator client {
+    provider        = "prisma-client-js"
+    previewFeatures = ["tracing"]
+}
+
+generator pothos {
+    provider = "prisma-pothos-types"
+}
+
+datasource db {
+    provider  = "postgresql"
+    url       = env("POSTGRES_PRISMA_URL")
+    directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Actuality {
+    id             Int         @id @default(autoincrement())
+    title          String
+    slug           String      @unique
+    activeSince    DateTime    @default(now())
+    activeTo       DateTime?
+    subTitle       String?
+    summary        String?
+    text           Json?
+    coverPhoto     Image?      @relation(fields: [coverPhotoId], references: [id], name: "ActualityCoverPhotoId")
+    coverPhotoId   Int?
+    previewPhoto   Image?      @relation(fields: [previewPhotoId], references: [id], name: "ActualityPreviewPhotoId")
+    previewPhotoId Int?
+    video          Video?      @relation(fields: [videoId], references: [id])
+    videoId        Int?
+    link           String?
+    status         String
+    isPinned       Boolean
+    production     Production? @relation(fields: [productionId], references: [id])
+    productionId   Int?
+    isExternal     Boolean
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    tags      Tag[]    @relation("ActualityTags")
+    images    Image[]  @relation("ActaulityImages")
+}
